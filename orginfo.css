@@ -6,6 +6,7 @@ iframe{
 .profile{
     width: 75px;
     height: 75px;
+    border: solid white 2px;
 }
 #map{
     width: 100%;
