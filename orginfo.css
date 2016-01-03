@@ -14,4 +14,8 @@ iframe{
 #conceitual{
     border: solid black 5px;
     border-radius: 10px;
+    padding: 5px;
+}
+#storyboard{
+    margin-top: 5px;
 }
