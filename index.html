@@ -7,28 +7,24 @@
 </head>
 <body style="margin: 10%">
 	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro.apk" download>	<button type="button" class="btn btn-success btn-block"><h4>Baixar apk</h4></button></a><br>
+		<button type="button" class="btn btn-success btn-block" onclick="openApp()"><h4>Barcode</h4></button><br>
 	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./modelos.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Modelos</h4></button></a><br>
 	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro1.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Espectro1</h4></button></a><br>
-	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro2.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Espectro2</h4></button></a><br>
-	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro3.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Espectro3</h4></button></a><br>
-	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro4.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Espectro4</h4></button></a><br>
-	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectro5.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Espectro5</h4></button></a><br>
-	</div></div>
-	<div class="row justify-content-center"><div class="col-md-6 col-sm-12">
-		<a href="./espectros.tsv" download>	<button type="button" class="btn btn-outline-primary btn-block"><h4>Todos os espectros</h4></button></a>
-	</div></div>
+	<script type="text/javascript">
+		function openApp() {
+			if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+				location.replace("com.barcodetopc://");
+				setTimeout(function() {
+					if (!document.webkitHidden) {
+						location.replace("https://itunes.apple.com/app/scienzi/id1180168368");
+					}
+				}, 25);
+			} else if ((navigator.userAgent.match(/android/i)) || (navigator.userAgent.match(/Android/i))) {
+				location.replace("https://play.google.com/store/apps/details?id=com.barcodetopc");
+			} else  {
+				alert("PC?");
+			}
+		}
+	</script>
 </body>
 </html>
