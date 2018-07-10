@@ -49,15 +49,15 @@
     </div>
 <script type="text/javascript" src="Chart.min.js"></script>
 <script>
-var cct1 = createChart(document.getElementById("t1").getContext('2d'), "t1");
-var ccw1 = createChart(document.getElementById("w1").getContext('2d'), "w1");
-var ccx1 = createChart(document.getElementById("x1").getContext('2d'), "x1");
+var cct1  = createChart(document.getElementById("t1").getContext('2d'), "t1");
+var ccw1  = createChart(document.getElementById("w1").getContext('2d'), "w1");
+var ccx1  = createChart(document.getElementById("x1").getContext('2d'), "x1");
 var ccnq1 = createChart(document.getElementById("nq1").getContext('2d'), "nq1");
-var cct2 = createChart(document.getElementById("t2").getContext('2d'), "t2");
-var ccw2 = createChart(document.getElementById("w2").getContext('2d'), "w2");
+var cct2  = createChart(document.getElementById("t2").getContext('2d'), "t2");
+var ccw2  = createChart(document.getElementById("w2").getContext('2d'), "w2");
 var ccnq2 = createChart(document.getElementById("nq2").getContext('2d'), "nq2");
-var ccej = createChart(document.getElementById("jitterE").getContext('2d'), "ej");
-var ccvj = createChart(document.getElementById("jitterV").getContext('2d'), "vj");
+var ccej  = createChart(document.getElementById("jitterE").getContext('2d'), "ej");
+var ccvj  = createChart(document.getElementById("jitterV").getContext('2d'), "vj");
 
 function loadJSON(filename, callback) {   
     var xobj = new XMLHttpRequest();
@@ -72,137 +72,56 @@ function loadJSON(filename, callback) {
     xobj.send(null);  
 }
 
+var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+
+function callback(response){
+    // Parse JSON string into object
+    var j = JSON.parse(response);
+    console.log(j);
+
+    var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
+    var c = 0, m = Math.floor(j["simulations"].length/100);
+    console.log(m);
+    j["simulations"].forEach(function (s, i) {
+        if (c%m == 0){
+            t11.push(s["t1"]);
+            w11.push(s["w1"]);
+            x11.push(s["x1"]);
+            nq11.push(s["nq1"]);
+            t21.push(s["t2"]);
+            w21.push(s["w2"]);
+            nq21.push(s["nq2"]);
+            ej1.push(s["jitterE"]);
+            vj1.push(s["jitterV"]);
+            l1.push(i)
+        }
+        c++;
+    });
+    t1.push(t11);
+    w1.push(w11);
+    x1.push(x11);
+    nq1.push(nq11);
+    t2.push(t21);
+    w2.push(w21);
+    nq2.push(nq21);
+    ej.push(ej1);
+    vj.push(vj1);
+    l = l1;
+    updateData(cct1, l, t1);
+    updateData(ccw1, l, w1);
+    updateData(ccx1, l, x1);
+    updateData(ccnq1, l, nq1);
+    updateData(cct2, l, t2);
+    updateData(ccw2, l, w2);
+    updateData(ccnq2, l, nq2);
+    updateData(ccej, l, ej);
+    updateData(ccvj, l, vj);
+}
 function drawForFile(filename){
-    var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
-    loadJSON(filename+1, function(response) {
-        // Parse JSON string into object
-        var j = JSON.parse(response);
-        console.log(j);
-
-        var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
-        var c = 0, m = Math.floor(j["simulations"].length/100);
-        console.log(m);
-        j["simulations"].forEach(function (s, i) {
-            if (c%m == 0){
-                t11.push(s["t1"]);
-                w11.push(s["w1"]);
-                x11.push(s["x1"]);
-                nq11.push(s["nq1"]);
-                t21.push(s["t2"]);
-                w21.push(s["w2"]);
-                nq21.push(s["nq2"]);
-                ej1.push(s["jitterE"]);
-                vj1.push(s["jitterV"]);
-                l1.push(i)
-            }
-            c++;
-        });
-        t1.push(t11);
-        w1.push(w11);
-        x1.push(x11);
-        nq1.push(nq11);
-        t2.push(t21);
-        w2.push(w21);
-        nq2.push(nq21);
-        ej.push(ej1);
-        vj.push(vj1);
-        l = l1;
-        updateData(cct1, l, t1);
-        updateData(ccw1, l, w1);
-        updateData(ccx1, l, x1);
-        updateData(ccnq1, l, nq1);
-        updateData(cct2, l, t2);
-        updateData(ccw2, l, w2);
-        updateData(ccnq2, l, nq2);
-        updateData(ccej, l, ej);
-        updateData(ccvj, l, vj);
-    });
-    loadJSON(filename+2, function(response) {
-        // Parse JSON string into object
-        var j = JSON.parse(response);
-        console.log(j);
-
-        var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
-        var c = 0, m = Math.floor(j["simulations"].length/100);
-        console.log(m);
-        j["simulations"].forEach(function (s, i) {
-            if (c%m == 0){
-                t11.push(s["t1"]);
-                w11.push(s["w1"]);
-                x11.push(s["x1"]);
-                nq11.push(s["nq1"]);
-                t21.push(s["t2"]);
-                w21.push(s["w2"]);
-                nq21.push(s["nq2"]);
-                ej1.push(s["jitterE"]);
-                vj1.push(s["jitterV"]);
-                l1.push(i)
-            }
-            c++;
-        });
-        t1.push(t11);
-        w1.push(w11);
-        x1.push(x11);
-        nq1.push(nq11);
-        t2.push(t21);
-        w2.push(w21);
-        nq2.push(nq21);
-        ej.push(ej1);
-        vj.push(vj1);
-        l = l1;
-        updateData(cct1, l, t1);
-        updateData(ccw1, l, w1);
-        updateData(ccx1, l, x1);
-        updateData(ccnq1, l, nq1);
-        updateData(cct2, l, t2);
-        updateData(ccw2, l, w2);
-        updateData(ccnq2, l, nq2);
-        updateData(ccej, l, ej);
-        updateData(ccvj, l, vj);
-    });
-    loadJSON(filename+3, function(response) {
-        // Parse JSON string into object
-        var j = JSON.parse(response);
-        console.log(j);
-
-        var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
-        var c = 0, m = Math.floor(j["simulations"].length/100);
-        console.log(m);
-        j["simulations"].forEach(function (s, i) {
-            if (c%m == 0){
-                t11.push(s["t1"]);
-                w11.push(s["w1"]);
-                x11.push(s["x1"]);
-                nq11.push(s["nq1"]);
-                t21.push(s["t2"]);
-                w21.push(s["w2"]);
-                nq21.push(s["nq2"]);
-                ej1.push(s["jitterE"]);
-                vj1.push(s["jitterV"]);
-                l1.push(i)
-            }
-            c++;
-        });
-        t1.push(t11);
-        w1.push(w11);
-        x1.push(x11);
-        nq1.push(nq11);
-        t2.push(t21);
-        w2.push(w21);
-        nq2.push(nq21);
-        ej.push(ej1);
-        vj.push(vj1);
-        l = l1;
-        updateData(cct1, l, t1);
-        updateData(ccw1, l, w1);
-        updateData(ccx1, l, x1);
-        updateData(ccnq1, l, nq1);
-        updateData(cct2, l, t2);
-        updateData(ccw2, l, w2);
-        updateData(ccnq2, l, nq2);
-        updateData(ccej, l, ej);
-        updateData(ccvj, l, vj);
-    });
+    t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+    loadJSON(filename+1, callback);
+    loadJSON(filename+2, callback);
+    loadJSON(filename+3, callback);
 }
 
 function createChart(ctx, label){
@@ -215,6 +134,7 @@ function createChart(ctx, label){
         }, scales: {yAxes: [{ ticks: { beginAtZero: true }}]}}
         }); 
 }
+
 function updateData(chart, labelArray, dataArray){
     chart.data.labels = labelArray;
     chart.data.datasets = [];
@@ -222,12 +142,22 @@ function updateData(chart, labelArray, dataArray){
         chart.data.datasets.push(
             {
                 label: index+1+"ª rodada",
-                borderColor: 'rgb(0, 99, 132)',
+                borderColor: getColor(index),
                 data: data,
             });
         
     });
     chart.update();
+}
+
+function getColor(i){
+    switch(i%5){
+        case 0: return 'rgb(0, 99, 132)';
+        case 1: return 'rgb(99, 0, 132)';
+        case 2: return 'rgb(0, 0, 132)';
+        case 3: return 'rgb(0, 99, 0)';
+        case 4: return 'rgb(99, 99, 132)';
+    }
 }
 </script>
 </body>
