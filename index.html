@@ -1,123 +1,177 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        /* In order to place the tracking correctly */
-        canvas.drawing, canvas.drawingBuffer {
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-    </style>
+	<title></title>
 </head>
-
 <body>
-    <!-- Div to show the scanner -->
-    <div id="scanner-container"></div>
-    <input type="button" id="btn" value="Start/Stop the scanner" />
-
-    <!-- Include the image-diff library -->
-    <script src="quagga.min.js"></script>
-
-    <script>
-        var _scannerIsRunning = false;
-
-        function startScanner() {
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#scanner-container'),
-                    constraints: {
-                        width: 480,
-                        height: 320,
-                        facingMode: "environment"
-                    },
-                },
-                decoder: {
-                    readers: [
-                        "code_128_reader",
-                        "ean_reader",
-                        "ean_8_reader",
-                        "code_39_reader",
-                        "code_39_vin_reader",
-                        "codabar_reader",
-                        "upc_reader",
-                        "upc_e_reader",
-                        "i2of5_reader"
-                    ],
-                    debug: {
-                        showCanvas: true,
-                        showPatches: true,
-                        showFoundPatches: true,
-                        showSkeleton: true,
-                        showLabels: true,
-                        showPatchLabels: true,
-                        showRemainingPatchLabels: true,
-                        boxFromPatches: {
-                            showTransformed: true,
-                            showTransformedBox: true,
-                            showBB: true
-                        }
-                    }
-                },
-
-            }, function (err) {
-                if (err) {
-                    console.log(err);
-                    return
-                }
-
-                console.log("Initialization finished. Ready to start");
-                Quagga.start();
-
-                // Set flag to is running
-                _scannerIsRunning = true;
-            });
-
-            Quagga.onProcessed(function (result) {
-                var drawingCtx = Quagga.canvas.ctx.overlay,
-                drawingCanvas = Quagga.canvas.dom.overlay;
-
-                if (result) {
-                    if (result.boxes) {
-                        drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
-                        result.boxes.filter(function (box) {
-                            return box !== result.box;
-                        }).forEach(function (box) {
-                            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
-                        });
-                    }
-
-                    if (result.box) {
-                        Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
-                    }
-
-                    if (result.codeResult && result.codeResult.code) {
-                        Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
-                    }
-                }
-            });
-
-
-            Quagga.onDetected(function (result) {
-                console.log("Barcode detected and processed : [" + result.codeResult.code + "]", result);
-            });
+    <div style="width: 50%">
+        <canvas id="t1" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="w1" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="x1" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="nq1" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="t2" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="w2" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="nq2" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="jitterE" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 50%">
+        <canvas id="jitterV" width="400" height="400"></canvas>
+    </div>
+<script type="text/javascript" src="Chart.min.js"></script>
+<script>
+function loadJSON(filename, callback) {   
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', filename + '.json', true);
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
         }
+    };
+    xobj.send(null);  
+}
+var ct1 = document.getElementById("t1").getContext('2d');
+var cw1 = document.getElementById("w1").getContext('2d');
+var cx1 = document.getElementById("x1").getContext('2d');
+var cnq1 = document.getElementById("nq1").getContext('2d');
+var ct2 = document.getElementById("t2").getContext('2d');
+var cw2 = document.getElementById("w2").getContext('2d');
+var cnq2 = document.getElementById("nq2").getContext('2d');
+var cej = document.getElementById("jitterE").getContext('2d');
+var cvj = document.getElementById("jitterV").getContext('2d');
+loadJSON("out", function(response) {
+    // Parse JSON string into object
+    var j = JSON.parse(response);
+    console.log(j);
 
-
-        // Start/stop scanner
-        document.getElementById("btn").addEventListener("click", function () {
-            if (_scannerIsRunning) {
-                Quagga.stop();
-            } else {
-                startScanner();
-            }
-        }, false);
-    </script>
+    var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+    j["simulations"].forEach(function (s, i) {
+        t1.push(s["t1"]);
+        w1.push(s["w1"]);
+        x1.push(s["x1"]);
+        nq1.push(s["nq1"]);
+        t2.push(s["t2"]);
+        w2.push(s["w2"]);
+        nq2.push(s["nq2"]);
+        ej.push(s["jitterE"]);
+        vj.push(s["jitterV"]);
+        l.push(i)
+    });
+    new Chart(ct1, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "t1",
+                borderColor: 'rgb(0, 99, 132)',
+                data: t1,
+            }]
+        }
+    });
+    new Chart(cw1, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "w1",
+                borderColor: 'rgb(0, 99, 132)',
+                data: w1,
+            }]
+        }
+    });
+    new Chart(cx1, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "x1",
+                borderColor: 'rgb(0, 99, 132)',
+                data: x1,
+            }]
+        }
+    });
+    new Chart(cnq1, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "nq1",
+                borderColor: 'rgb(0, 99, 132)',
+                data: nq1,
+            }]
+        }
+    });
+    new Chart(ct2, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "t2",
+                borderColor: 'rgb(0, 99, 132)',
+                data: t2,
+            }]
+        }
+    });
+    new Chart(cw2, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "w2",
+                borderColor: 'rgb(0, 99, 132)',
+                data: w2,
+            }]
+        }
+    });
+    new Chart(cnq2, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "nq2",
+                borderColor: 'rgb(0, 99, 132)',
+                data: nq2,
+            }]
+        }
+    });
+    new Chart(cej, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "ej",
+                borderColor: 'rgb(0, 99, 132)',
+                data: ej,
+            }]
+        }
+    });
+    new Chart(cvj, {
+        type: 'line',
+        data: {
+            labels: l,
+            datasets: [{
+                label: "vj",
+                borderColor: 'rgb(0, 99, 132)',
+                data: vj,
+            }]
+        }
+    });
+});
+</script>
 </body>
-
 </html>
