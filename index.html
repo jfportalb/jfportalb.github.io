@@ -234,7 +234,6 @@ function getSampleColor(s) {
 function updateIntervalData(chart, labelArray, dataArray, label){
     chart.data.labels = labelArray;
     line = Array.apply(null, Array(labelArray.length)).map(Number.prototype.valueOf,10);
-    console.log(line)
     chart.data.datasets = [
             {
                 label: "10%",
