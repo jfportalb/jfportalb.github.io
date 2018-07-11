@@ -4,22 +4,40 @@
 	<title></title>
 </head>
 <body>
+    <h2>Período transiente</h2>
     <h3>Sem interrupção</h3>
-    <button onclick="drawForFile('ro1s')">ρ1 = 0.1</button>
-    <button onclick="drawForFile('ro2s')">ρ1 = 0.2</button>
-    <button onclick="drawForFile('ro3s')">ρ1 = 0.3</button>
-    <button onclick="drawForFile('ro4s')">ρ1 = 0.4</button>
-    <button onclick="drawForFile('ro5s')">ρ1 = 0.5</button>
-    <button onclick="drawForFile('ro6s')">ρ1 = 0.6</button>
-    <button onclick="drawForFile('ro7s')">ρ1 = 0.7</button>
+    <button onclick="drawTransientForFile('ro1s')">ρ1 = 0.1</button>
+    <button onclick="drawTransientForFile('ro2s')">ρ1 = 0.2</button>
+    <button onclick="drawTransientForFile('ro3s')">ρ1 = 0.3</button>
+    <button onclick="drawTransientForFile('ro4s')">ρ1 = 0.4</button>
+    <button onclick="drawTransientForFile('ro5s')">ρ1 = 0.5</button>
+    <button onclick="drawTransientForFile('ro6s')">ρ1 = 0.6</button>
+    <button onclick="drawTransientForFile('ro7s')">ρ1 = 0.7</button>
     <h3>Com interrupção</h3>
-    <button onclick="drawForFile('ro1c')">ρ1 = 0.1</button>
-    <button onclick="drawForFile('ro2c')">ρ1 = 0.2</button>
-    <button onclick="drawForFile('ro3c')">ρ1 = 0.3</button>
-    <button onclick="drawForFile('ro4c')">ρ1 = 0.4</button>
-    <button onclick="drawForFile('ro5c')">ρ1 = 0.5</button>
-    <button onclick="drawForFile('ro6c')">ρ1 = 0.6</button>
-    <button onclick="drawForFile('ro7c')">ρ1 = 0.7</button>
+    <button onclick="drawTransientForFile('ro1c')">ρ1 = 0.1</button>
+    <button onclick="drawTransientForFile('ro2c')">ρ1 = 0.2</button>
+    <button onclick="drawTransientForFile('ro3c')">ρ1 = 0.3</button>
+    <button onclick="drawTransientForFile('ro4c')">ρ1 = 0.4</button>
+    <button onclick="drawTransientForFile('ro5c')">ρ1 = 0.5</button>
+    <button onclick="drawTransientForFile('ro6c')">ρ1 = 0.6</button>
+    <button onclick="drawTransientForFile('ro7c')">ρ1 = 0.7</button>
+    <h2>Intervalo de confiança</h2>
+    <h3>Sem interrupção</h3>
+    <button onclick="drawIntervalForFile('intro1s')">ρ1 = 0.1</button>
+    <button onclick="drawIntervalForFile('intro2s')">ρ1 = 0.2</button>
+    <button onclick="drawIntervalForFile('intro3s')">ρ1 = 0.3</button>
+    <button onclick="drawIntervalForFile('intro4s')">ρ1 = 0.4</button>
+    <button onclick="drawIntervalForFile('intro5s')">ρ1 = 0.5</button>
+    <button onclick="drawIntervalForFile('intro6s')">ρ1 = 0.6</button>
+    <button onclick="drawIntervalForFile('intro7s')">ρ1 = 0.7</button>
+    <h3>Com interrupção</h3>
+    <button onclick="drawIntervalForFile('intro1c')">ρ1 = 0.1</button>
+    <button onclick="drawIntervalForFile('intro2c')">ρ1 = 0.2</button>
+    <button onclick="drawIntervalForFile('intro3c')">ρ1 = 0.3</button>
+    <button onclick="drawIntervalForFile('intro4c')">ρ1 = 0.4</button>
+    <button onclick="drawIntervalForFile('intro5c')">ρ1 = 0.5</button>
+    <button onclick="drawIntervalForFile('intro6c')">ρ1 = 0.6</button>
+    <button onclick="drawIntervalForFile('intro7c')">ρ1 = 0.7</button>
     <div style="width: 50%">
         <canvas id="t1" width="400" height="400"></canvas>
     </div>
@@ -74,7 +92,7 @@ function loadJSON(filename, callback) {
 
 var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
 
-function callback(response){
+function callbackTransient(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
     console.log(j);
@@ -117,11 +135,63 @@ function callback(response){
     updateData(ccej, l, ej);
     updateData(ccvj, l, vj);
 }
-function drawForFile(filename){
+
+function drawTransientForFile(filename){
     t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
-    loadJSON(filename+1, callback);
-    loadJSON(filename+2, callback);
-    loadJSON(filename+3, callback);
+    loadJSON(filename+1, callbackTransient);
+    loadJSON(filename+2, callbackTransient);
+    loadJSON(filename+3, callbackTransient);
+}
+
+function callBackInterval(response){
+    // Parse JSON string into object
+    var j = JSON.parse(response);
+    console.log(j);
+
+    var t11 = [0], w11 = [0], x11 =  [0],nq11 = [0], t21 = [0], w21 = [0], nq21 = [0], ej1 = [0], vj1 = [0], l1=[];
+    j["simulations"].forEach(function (ss, i) {
+        var s = ss["confidenceInterval"];
+        if (s){
+            t11.push(s["t1"]["percentage"]);
+            w11.push(s["w1"]["percentage"]);
+            x11.push(s["x1"]["percentage"]);
+            nq11.push(s["nq1"]["percentage"]);
+            t21.push(s["t2"]["percentage"]);
+            w21.push(s["w2"]["percentage"]);
+            nq21.push(s["nq2"]["percentage"]);
+            ej1.push(s["jitterMean"]["percentage"]);
+            vj1.push(s["jitterVariance"]["percentage"]);
+        }
+        l1.push(i)
+    });
+    t1.push(t11);
+    w1.push(w11);
+    x1.push(x11);
+    nq1.push(nq11);
+    t2.push(t21);
+    w2.push(w21);
+    nq2.push(nq21);
+    ej.push(ej1);
+    vj.push(vj1);
+    l.push(j.samples);
+    updateIntervalData(cct1, l1, t1, l);
+    updateIntervalData(ccw1, l1, w1, l);
+    updateIntervalData(ccx1, l1, x1, l);
+    updateIntervalData(ccnq1, l1, nq1, l);
+    updateIntervalData(cct2, l1, t2, l);
+    updateIntervalData(ccw2, l1, w2, l);
+    updateIntervalData(ccnq2, l1, nq2, l);
+    updateIntervalData(ccej, l1, ej, l);
+    updateIntervalData(ccvj, l1, vj, l);
+}
+
+function drawIntervalForFile(filename){
+    t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+    var samples = [1000, 10000, 100000];
+    for (var j = samples.length - 1; j >= 0; j--) {
+        var f = filename + samples[j];
+        loadJSON(f, callBackInterval);
+    }
 }
 
 function createChart(ctx, label){
@@ -142,6 +212,21 @@ function updateData(chart, labelArray, dataArray){
         chart.data.datasets.push(
             {
                 label: index+1+"ª rodada",
+                borderColor: getColor(index),
+                data: data,
+            });
+        
+    });
+    chart.update();
+}
+
+function updateIntervalData(chart, labelArray, dataArray, label){
+    chart.data.labels = labelArray;
+    chart.data.datasets = [];
+    dataArray.forEach((data, index) =>{
+        chart.data.datasets.push(
+            {
+                label: label[index],
                 borderColor: getColor(index),
                 data: data,
             });
