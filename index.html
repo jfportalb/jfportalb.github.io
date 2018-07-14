@@ -77,10 +77,21 @@ var ccnq2 = createChart(document.getElementById("nq2").getContext('2d'), "nq2");
 var ccej  = createChart(document.getElementById("jitterE").getContext('2d'), "ej");
 var ccvj  = createChart(document.getElementById("jitterV").getContext('2d'), "vj");
 
+function createChart(ctx, label){
+    return new Chart(ctx, {
+            type: 'line',
+            options: { 
+        title: {
+            display: true,
+            text: label
+        }, scales: {yAxes: [{ ticks: { beginAtZero: true }}]}}
+        }); 
+}
+
 function loadJSON(filename, callback) {   
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', filename + '.json', true);
+    xobj.open('GET', 'results/' + filename + '.json', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4 && xobj.status == "200") {
             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
@@ -143,6 +154,31 @@ function drawTransientForFile(filename){
     loadJSON(filename+3, callbackTransient);
 }
 
+function updateData(chart, labelArray, dataArray){
+    chart.data.labels = labelArray;
+    chart.data.datasets = [];
+    dataArray.forEach((data, index) =>{
+        chart.data.datasets.push(
+            {
+                label: index+1+"ª rodada",
+                borderColor: getColor(index),
+                data: data,
+            });
+        
+    });
+    chart.update();
+}
+
+function getColor(i){
+    switch(i%5){
+        case 0: return 'rgb(0, 99, 132)';
+        case 1: return 'rgb(99, 0, 132)';
+        case 2: return 'rgb(0, 0, 132)';
+        case 3: return 'rgb(0, 99, 0)';
+        case 4: return 'rgb(99, 99, 132)';
+    }
+}
+
 function callBackInterval(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
@@ -194,43 +230,6 @@ function drawIntervalForFile(filename){
     }
 }
 
-function createChart(ctx, label){
-    return new Chart(ctx, {
-            type: 'line',
-            options: { 
-        title: {
-            display: true,
-            text: label
-        }, scales: {yAxes: [{ ticks: { beginAtZero: true }}]}}
-        }); 
-}
-
-function updateData(chart, labelArray, dataArray){
-    chart.data.labels = labelArray;
-    chart.data.datasets = [];
-    dataArray.forEach((data, index) =>{
-        chart.data.datasets.push(
-            {
-                label: index+1+"ª rodada",
-                borderColor: getColor(index),
-                data: data,
-            });
-        
-    });
-    chart.update();
-}
-
-function getSampleColor(s) {
-    switch(s){
-        case 100: return 'rgb(0, 99, 132)';
-        case 1000: return 'rgb(99, 0, 132)';
-        case 5000: return 'rgb(255, 0, 99)';
-        case 10000: return 'rgb(0, 0, 132)';
-        case 50000: return 'rgb(99, 99, 132)';
-        case 100000: return 'rgb(0, 99, 0)';
-    }
-}
-
 function updateIntervalData(chart, labelArray, dataArray, label){
     chart.data.labels = labelArray;
     line = Array.apply(null, Array(labelArray.length)).map(Number.prototype.valueOf,10);
@@ -252,15 +251,77 @@ function updateIntervalData(chart, labelArray, dataArray, label){
     chart.update();
 }
 
-function getColor(i){
-    switch(i%5){
-        case 0: return 'rgb(0, 99, 132)';
-        case 1: return 'rgb(99, 0, 132)';
-        case 2: return 'rgb(0, 0, 132)';
-        case 3: return 'rgb(0, 99, 0)';
-        case 4: return 'rgb(99, 99, 132)';
+function getSampleColor(s) {
+    switch(s){
+        case 100: return 'rgb(0, 99, 132)';
+        case 1000: return 'rgb(99, 0, 132)';
+        case 5000: return 'rgb(255, 0, 99)';
+        case 10000: return 'rgb(0, 0, 132)';
+        case 50000: return 'rgb(99, 99, 132)';
+        case 100000: return 'rgb(0, 99, 0)';
     }
 }
+
+function callbackResult(response){
+    // Parse JSON string into object
+    var j = JSON.parse(response);
+    console.log(j);
+
+    var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
+    j[0]["simulations"].forEach(function (s, i) {
+        t11.push(s["t1"]);
+        w11.push(s["w1"]);
+        x11.push(s["x1"]);
+        nq11.push(s["nq1"]);
+        t21.push(s["t2"]);
+        w21.push(s["w2"]);
+        nq21.push(s["nq2"]);
+        ej1.push(s["jitterE"]);
+        vj1.push(s["jitterV"]);
+        l1.push(i)
+    });
+    t1.push(t11);
+    w1.push(w11);
+    x1.push(x11);
+    nq1.push(nq11);
+    t2.push(t21);
+    w2.push(w21);
+    nq2.push(nq21);
+    ej.push(ej1);
+    vj.push(vj1);
+    l = l1;
+    updateResultData(cct1, l, t1);
+    updateResultData(ccw1, l, w1);
+    updateResultData(ccx1, l, x1);
+    updateResultData(ccnq1, l, nq1);
+    updateResultData(cct2, l, t2);
+    updateResultData(ccw2, l, w2);
+    updateResultData(ccnq2, l, nq2);
+    updateResultData(ccej, l, ej);
+    updateResultData(ccvj, l, vj);
+}
+
+function drawResultForFile(filename){
+    t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+    loadJSON(filename, callbackResult);
+}
+
+function updateResultData(chart, labelArray, dataArray){
+    chart.data.labels = labelArray;
+    chart.data.datasets = [];
+    dataArray.forEach((data, index) =>{
+        chart.data.datasets.push(
+            {
+                label: "rodada",
+                borderColor: 'rgb(0, 99, 132)',
+                data: data,
+            });
+        
+    });
+    chart.update();
+}
+
+drawResultForFile("resultado");
 </script>
 </body>
 </html>
