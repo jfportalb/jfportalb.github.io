@@ -77,14 +77,31 @@ var ccnq2 = createChart(document.getElementById("nq2").getContext('2d'), "nq2");
 var ccej  = createChart(document.getElementById("jitterE").getContext('2d'), "ej");
 var ccvj  = createChart(document.getElementById("jitterV").getContext('2d'), "vj");
 
+var space = 10000
+var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
+var l1 = [0]
+for (var i = 1; i <= 50; i++) {
+    l1.push(space*i);
+}
+
 function createChart(ctx, label){
     return new Chart(ctx, {
             type: 'line',
             options: { 
-        title: {
-            display: true,
-            text: label
-        }, scales: {yAxes: [{ ticks: { beginAtZero: true }}]}}
+                title: {
+                    display: true,
+                    text: label
+                }, scales: {
+                    yAxes: [{
+                        ticks: { beginAtZero: true },
+                        scaleLabel: { display: true, labelString: 'Largura do I.C. (em %)'}
+                    }],
+                    xAxes: [{
+                        ticks: { beginAtZero: true },
+                        scaleLabel: { display: true, labelString: 'Nº de amostras'}
+                    }]
+                }
+            }
         }); 
 }
 
@@ -101,7 +118,6 @@ function loadJSON(filename, callback) {
     xobj.send(null);  
 }
 
-var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
 
 function callbackTransient(response){
     // Parse JSON string into object
@@ -153,6 +169,7 @@ function drawTransientForFile(filename){
 }
 
 function updateData(chart, labelArray, dataArray){
+    chart.options.scales.yAxes[0].scaleLabel.labelString = 'Valor calculado incrementalmente';
     chart.data.labels = labelArray;
     chart.data.datasets = [];
     dataArray.forEach((data, index) =>{
@@ -176,11 +193,7 @@ function getColor(i){
         case 4: return 'rgb(99, 99, 132)';
     }
 }
-var space = 10000
-var l1 = [0]
-for (var i = 1; i <= 50; i++) {
-    l1.push(space*i);
-}
+
 function callBackInterval(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
@@ -249,6 +262,7 @@ function drawIntervalForFile(filename){
 }
 
 function updateIntervalData(chart, labelArray, dataArray, label){
+    chart.options.scales.yAxes[0].scaleLabel.labelString = 'Largura do I.C. (em %)';
     chart.data.labels = labelArray;
     line = Array.apply(null, Array(labelArray.length)).map(Number.prototype.valueOf,10);
     chart.data.datasets = [
@@ -257,20 +271,21 @@ function updateIntervalData(chart, labelArray, dataArray, label){
                 borderColor: 'rgb(132, 255, 132)',
                 data: line,
             }];
-    console.log(dataArray)
-    dataArray.forEach((data, index) =>{
-        data[0] = 0
-        data.forEach((d, i)=>{
-            if(d == undefined) data[i] = data[i-1];
-        })
-        chart.data.datasets.push(
-            {
-                label: label[index],
-                borderColor: getSampleColor(label[index]),
-                data: data,
-            });
-        
-    });
+    if (dataArray.length > 5){
+        dataArray.forEach((data, index) =>{
+            data[0] = 0
+            data.forEach((d, i)=>{
+                if(d == undefined) data[i] = data[i-1];
+            })
+            chart.data.datasets.push(
+                {
+                    label: label[index],
+                    borderColor: getSampleColor(label[index]),
+                    data: data,
+                });
+            
+        });
+    }
     chart.update();
 }
 
