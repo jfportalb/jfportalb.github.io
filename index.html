@@ -106,11 +106,9 @@ var t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj
 function callbackTransient(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
-    console.log(j);
 
     var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
     var c = 0, m = Math.floor(j["simulations"].length/100);
-    console.log(m);
     j["simulations"].forEach(function (s, i) {
         if (c%m == 0){
             t11.push(s["t1"]);
@@ -178,27 +176,47 @@ function getColor(i){
         case 4: return 'rgb(99, 99, 132)';
     }
 }
-
+var space = 10000
+var l1 = [0]
+for (var i = 1; i <= 50; i++) {
+    l1.push(space*i);
+}
 function callBackInterval(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
-    console.log(j);
-
-    var t11 = [0], w11 = [0], x11 =  [0],nq11 = [0], t21 = [0], w21 = [0], nq21 = [0], ej1 = [0], vj1 = [0], l1=[];
+    var t11 = [0], w11 = [0], x11 =  [0],nq11 = [0], t21 = [0], w21 = [0], nq21 = [0], ej1 = [0], vj1 = [0];//, l1=[0]
+    var c = 0;
+    do {
+        t11.push(0);
+        w11.push(0);
+        x11.push(0);
+        nq11.push(0);
+        t21.push(0);
+        w21.push(0);
+        nq21.push(0);
+        ej1.push(0);
+        vj1.push(0);
+        c++
+    } while (c < j.samples/space);
     j["simulations"].forEach(function (ss, i) {
-        var s = ss["confidenceInterval"];
-        if (s){
-            t11.push(s["t1"]["percentage"]);
-            w11.push(s["w1"]["percentage"]);
-            x11.push(s["x1"]["percentage"]);
-            nq11.push(s["nq1"]["percentage"]);
-            t21.push(s["t2"]["percentage"]);
-            w21.push(s["w2"]["percentage"]);
-            nq21.push(s["nq2"]["percentage"]);
-            ej1.push(s["jitterMean"]["percentage"]);
-            vj1.push(s["jitterVariance"]["percentage"]);
+        if (i*j.samples % space == 0){
+            var s = ss["confidenceInterval"];
+            if (s){
+                c = 0;
+                do {
+                    t11.push(s["t1"]["percentage"]);
+                    w11.push(s["w1"]["percentage"]);
+                    x11.push(s["x1"]["percentage"]);
+                    nq11.push(s["nq1"]["percentage"]);
+                    t21.push(s["t2"]["percentage"]);
+                    w21.push(s["w2"]["percentage"]);
+                    nq21.push(s["nq2"]["percentage"]);
+                    ej1.push(s["jitterMean"]["percentage"]);
+                    vj1.push(s["jitterVariance"]["percentage"]);
+                    c++
+                } while (c < j.samples/space)
+            }
         }
-        l1.push(i)
     });
     t1.push(t11);
     w1.push(w11);
@@ -239,7 +257,12 @@ function updateIntervalData(chart, labelArray, dataArray, label){
                 borderColor: 'rgb(132, 255, 132)',
                 data: line,
             }];
+    console.log(dataArray)
     dataArray.forEach((data, index) =>{
+        data[0] = 0
+        data.forEach((d, i)=>{
+            if(d == undefined) data[i] = data[i-1];
+        })
         chart.data.datasets.push(
             {
                 label: label[index],
@@ -265,7 +288,6 @@ function getSampleColor(s) {
 function callbackResult(response){
     // Parse JSON string into object
     var j = JSON.parse(response);
-    console.log(j);
 
     var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
     j[0]["simulations"].forEach(function (s, i) {
