@@ -482,6 +482,7 @@ function updateRobustezData(dataArrayD, dataArrayV) {
     dataArrayD.forEach((data, index) =>{
         chartRobustezData.data.datasets.push(
             {
+                label: index+1+"ª semente",
                 borderColor: 'rgb(0,99,132)',
                 data: data,
                 showLine: false
@@ -501,6 +502,7 @@ function updateRobustezData(dataArrayD, dataArrayV) {
     dataArrayV.forEach((data, index) =>{
         chartRobustezVoice.data.datasets.push(
             {
+                label: index+1+"ª semente",
                 borderColor: 'rgb(0,99,132)',
                 data: data,
                 showLine: false
