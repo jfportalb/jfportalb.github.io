@@ -424,7 +424,7 @@ function updateIntervalData(chart, labelArray, dataArray, label){
         dataArray.forEach((data, index) =>{
             chart.data.datasets.push(
                 {
-                    label: label[index],
+                    label: label[index] + " amostras/rodada",
                     borderColor: getSampleColor(label[index]),
                     data: data,
                 });
@@ -444,64 +444,6 @@ function getSampleColor(s) {
         case 100000: return 'rgb(0, 99, 0)';
     }
 }
-
-// function callbackResult(response){
-//     // Parse JSON string into object
-//     var j = JSON.parse(response);
-
-//     var t11 = [], w11 = [], x11 =  [],nq11 = [], t21 = [], w21 = [], nq21 = [], ej1 = [], vj1 = [], l1=[];
-//     j[0]["simulations"].forEach(function (s, i) {
-//         t11.push(s["t1"]);
-//         w11.push(s["w1"]);
-//         x11.push(s["x1"]);
-//         nq11.push(s["nq1"]);
-//         t21.push(s["t2"]);
-//         w21.push(s["w2"]);
-//         nq21.push(s["nq2"]);
-//         ej1.push(s["jitterE"]);
-//         vj1.push(s["jitterV"]);
-//         l1.push(i)
-//     });
-//     t1.push(t11);
-//     w1.push(w11);
-//     x1.push(x11);
-//     nq1.push(nq11);
-//     t2.push(t21);
-//     w2.push(w21);
-//     nq2.push(nq21);
-//     ej.push(ej1);
-//     vj.push(vj1);
-//     l = l1;
-//     updateResultData(cct1, l, t1);
-//     updateResultData(ccw1, l, w1);
-//     updateResultData(ccx1, l, x1);
-//     updateResultData(ccnq1, l, nq1);
-//     updateResultData(cct2, l, t2);
-//     updateResultData(ccw2, l, w2);
-//     updateResultData(ccnq2, l, nq2);
-//     updateResultData(ccej, l, ej);
-//     updateResultData(ccvj, l, vj);
-// }
-
-// function drawResultForFile(filename){
-//     t1 = [], w1 = [], x1 =  [],nq1 = [], t2 = [], w2 = [], nq2 = [], ej = [], vj = [], l=[];
-//     loadJSON(filename, callbackResult);
-// }
-
-// function updateResultData(chart, labelArray, dataArray){
-//     chart.data.labels = labelArray;
-//     chart.data.datasets = [];
-//     dataArray.forEach((data, index) =>{
-//         chart.data.datasets.push(
-//             {
-//                 label: "rodada",
-//                 borderColor: 'rgb(0, 99, 132)',
-//                 data: data,
-//             });
-        
-//     });
-//     chart.update();
-// }
 
 function callbackRobustez(response) {
     var j = JSON.parse(response);
