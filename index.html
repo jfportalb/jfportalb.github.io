@@ -8,7 +8,7 @@
   <!-- CSS Files -->
   <link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body>
+<body style="padding: 3%">
     <div style="float: right;">
         <button onclick="showTrans()">Período transiente</button>
         <button onclick="showIC()">Intervalo de confiança</button>
@@ -323,7 +323,7 @@ function updateData(chart, labelArray, dataArray){
     dataArray.forEach((data, index) =>{
         chart.data.datasets.push(
             {
-                label: index+1+"ª rodada",
+                label: index+1+"ª semente",
                 borderColor: getColor(index),
                 data: data,
             });
